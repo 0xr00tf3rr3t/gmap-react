@@ -25,6 +25,7 @@ class App extends Component {
         };
         axios.get(endPoints + new URLSearchParams(parameters))
             .then(response => {
+                
                 this.setState(
                     {
                         venues: response.data.response.groups[0].items
@@ -51,7 +52,7 @@ class App extends Component {
             clickableIcons: false
         });
         let infowindow = new window.google.maps.InfoWindow({});
-        let newArray=[];
+        let newArray = [];
         this.state.venues.map((myVenue) => {
                 let contentString = `${myVenue.venue.name}`;
 
@@ -61,30 +62,46 @@ class App extends Component {
                         lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng
                     },
                     map: map,
-                    title: 'San Juan'
+                    title: myVenue.venue.name
                 });
                 marker.addListener('click', function () {
+                    console.log(map);
+                    console.log(marker);
                     infowindow.setContent(contentString);
                     infowindow.open(map, marker);
                 });
                 newArray.push(marker);
-            this.setState({
-                markers:newArray,
-                infoWindow:infowindow,
-                map:map
-            });
+                this.setState({
+                    markers: newArray,
+                    infoWindow: infowindow,
+                    map: map
+                });
 
 
             }
-
         );
 
+    };
+    setInfoWindow = (marker) => {
+   let mapMarker= this.state.markers.filter(
+       (filter) => {
+       if (filter.title === marker.venue.name) {
+           return filter;
+       }}
+       );
+
+
+        this.state.infoWindow.setContent(marker.venue.name);
+
+        this.state.infoWindow.open(this.state.map,
+            mapMarker[0])
     };
 
     render() {
         return (
             <div className={'Main-Container'}>
-                <Menu markers={this.state.markers} venues={this.state.venues} infoWindow={this.state.infoWindow} map={this.state.map}/>
+                <Menu markers={this.state.markers} venues={this.state.venues} infoWindow={this.state.infoWindow}
+                      map={this.state.map} setInfoWindow={this.setInfoWindow}/>
                 <Map renderMap={this.renderMap} getVenues={this.getVenues}/>
             </div>
         );
