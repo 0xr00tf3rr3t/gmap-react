@@ -1,0 +1,16 @@
+.menuContainer{
+  width:25%;
+    background-color:red;
+    height:100vh;
+  overflow: scroll;
+
+
+}
+
+ul{
+  list-style: none;
+  padding:1em;
+}
+li:hover{
+    background-color: tomato;
+}
