@@ -1,16 +1,21 @@
 .menuContainer{
-  width:25%;
-    background-color:red;
+  width:15%;
+    background-color:#B98E23;
     height:100vh;
   overflow: scroll;
+
 
 
 }
 
 ul{
   list-style: none;
-  padding:1em;
+    padding: 1em;
+
 }
 li:hover{
-    background-color: tomato;
+    background-color: #B9236C;
+  color: white;
+    box-shadow: 5px 0px 23px 0px rgba(0,0,0,0.51);
+
 }
