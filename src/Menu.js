@@ -10,7 +10,7 @@ class Menu extends Component {
         <div className={'menuContainer'} >
 <Search updateQuery={this.props.updateQuery}/>
             <ul>
-                {this.props.venues.map((venue)=>
+                {this.props.selectedVenues.map((venue)=>
                     {
                         return(
 
