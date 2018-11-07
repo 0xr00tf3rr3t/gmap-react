@@ -1,11 +1,8 @@
 .menuContainer{
-  width:15%;
-    background-color:#B98E23;
+  width:25%;
+    background-color:#ff6e40;
     height:100vh;
   overflow: scroll;
-
-
-
 }
 
 ul{
@@ -14,8 +11,8 @@ ul{
 
 }
 li:hover{
-    background-color: #B9236C;
+    background-color: #c53d13;
   color: white;
-    box-shadow: 5px 0px 23px 0px rgba(0,0,0,0.51);
+    box-shadow: 5px 0 23px 0  rgba(0,0,0,0.51);
 
 }
