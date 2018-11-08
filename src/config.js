@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 class Config {
 
  //   static client_id="543XCRHEDCJN5YQIZONCQ1NR0O3JWIYCFSWS4EKPPZMRPX3U";
@@ -2883,3 +2884,5 @@ class Config {
 
 }
 export default Config;
+=======
+>>>>>>> master
