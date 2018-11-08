@@ -30,54 +30,67 @@ class App extends Component {
 
     };
     getQuery = () => {
-        let {query} = this.state;
-        let newArray=[];
-        console.log(query);
-        if (this.state.query!=='') {
-            const match = new RegExp(escapeRegExp(query), 'i');
-            let values = this.state.venues.filter((venue) => {
-                console.log(match);
-
-                if (match.test(venue.name)) {
+        let {query} = this.state;//Local variable for state
+        let newArray = [];//Temporary array for new values
+        if (this.state.query !== '') {//If query not empty
+            const match = new RegExp(escapeRegExp(query), 'i');//Create RegExp with query
+            let values = this.state.venues.filter((venue) => {//filters the Query
+                if (match.test(venue.name)) {//If it match returns it
                     return venue;
                 }
             });
-            console.log(values);
+
             this.setState({
-                selectedVenues:values
-            },()=>{
-                for(let marker of this.state.markers)
-                { console.log(marker);
+                selectedVenues: values //set values as selectedVenues
+            }, () => {
+                newArray= this.state.markers.map((marker,index)=>{
                     for(let selected of this.state.selectedVenues)
                     {
-                        if(marker.title===selected.name)
+                        if (marker.title===selected.name)
                         {
-                            newArray.push(marker);
-                            break;
+                            console.log('.');
+                            console.log(selected);
+                            return marker;
                         }
-                        else
-                        {
-                            marker.visible=false;
-                            newArray.push(marker);
-                        }
+                       else if (this.state.selectedVenues[this.state.selectedVenues.length-1].name===selected.name) {
+                            console.log('*');
+                            marker.visible = false;
+                            return marker;
+                       }
+
 
                     }
-                }
+
+                });
+
+                 for (let marker of this.state.markers) {
+                    for (let selected of this.state.selectedVenues) {
+                         if (marker.title === selected.name) {
+                             newArray.push(marker);
+
+                             break;
+                         }
+                     }
+                 }
+
                 this.setState({
-                    markers:newArray
+                    markers: newArray
                 })
             })
 
 
         }
-        else{
-            for(let marker in this.state.markers)
-            {
-                marker.visible=true;
+        else {
+            for (let marker in this.state.markers) {
+
+                marker.visible = true;
                 newArray.push(marker);
+                console.log(newArray);
             }
-            this.setState({selectedVenues:this.state.venues,
-            markers:newArray})
+            this.setState({
+                selectedVenues: this.state.venues,
+                markers: newArray
+            })
         }
     };
 
@@ -100,10 +113,10 @@ class App extends Component {
                 this.setState({
                         venues: Config.debug,
                     },
-                    ()=>{
-                    this.setState({
-                        selectedVenues:this.state.venues
-                    })
+                    () => {
+                        this.setState({
+                            selectedVenues: this.state.venues
+                        })
                     }
                 );
                 this.renderMap();
@@ -282,7 +295,7 @@ class App extends Component {
             <div className={'Main-Container'}>
                 <Menu markers={this.state.markers} venues={this.state.venues} infoWindow={this.state.infoWindow}
                       map={this.state.map} setInfoWindow={this.setInfoWindow} animationControl={this.animationControl}
-                      updateQuery={this.updateQuery}  selectedVenues={this.state.selectedVenues}
+                      updateQuery={this.updateQuery} selectedVenues={this.state.selectedVenues}
                 />
                 <Map renderMap={this.renderMap} getVenues={this.getVenues}/>
             </div>
