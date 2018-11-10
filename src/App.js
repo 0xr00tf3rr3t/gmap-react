@@ -36,6 +36,7 @@ class App extends Component {
             const match = new RegExp(escapeRegExp(query), 'i');//Create RegExp with query
             let values = this.state.venues.filter((venue) => {//filters the Query
                 if (match.test(venue.name)) {//If it match returns it
+                    console.log('1');
                     return venue;
                 }
             });
@@ -43,35 +44,40 @@ class App extends Component {
             this.setState({
                 selectedVenues: values //set values as selectedVenues
             }, () => {
-                newArray= this.state.markers.map((marker,index)=>{
-                    for(let selected of this.state.selectedVenues)
-                    {
-                        if (marker.title===selected.name)
-                        {
-                            console.log('.');
-                            console.log(selected);
-                            return marker;
-                        }
-                       else if (this.state.selectedVenues[this.state.selectedVenues.length-1].name===selected.name) {
-                            console.log('*');
-                            marker.visible = false;
-                            return marker;
-                       }
+                console.log(newArray);
+                newArray = this.state.markers.map((marker, index) => {
 
+                    for (let selected of this.state.selectedVenues) {//For all selected venues
+                        if (marker.title === selected.name) {//If marker titles same as selected name
+                            console.log("2");
+                            console.log(marker.title);
+                            console.log(selected);
+
+
+                        }
+                        else if (index===this.state.selectedVenues.length) {
+                            marker.setMap(null);
+                            console.log("2else");
+                            console.log(marker.title);
+                        }
 
                     }
-
+                    return marker;
                 });
-
-                 for (let marker of this.state.markers) {
+                console.log("NEW ARRAY AFTER FIRST FOR");
+                console.log(newArray);
+               /* for (let marker of this.state.markers) {
                     for (let selected of this.state.selectedVenues) {
-                         if (marker.title === selected.name) {
-                             newArray.push(marker);
-
-                             break;
-                         }
-                     }
-                 }
+                        if (marker.title === selected.name) {
+                            newArray.push(marker);
+                            console.log("second For:");
+                            console.log(marker.title);
+                            break;
+                        }
+                    }
+                }
+                console.log('NewArray');
+                console.log(newArray);*/
 
                 this.setState({
                     markers: newArray
@@ -81,12 +87,13 @@ class App extends Component {
 
         }
         else {
-            for (let marker in this.state.markers) {
 
-                marker.visible = true;
-                newArray.push(marker);
-                console.log(newArray);
-            }
+            newArray = this.state.markers.map((marker) => {
+                    marker.setMap(this.state.map);
+                    return marker;
+                } //for (let marker in this.state.markers) {
+            );
+            //   }
             this.setState({
                 selectedVenues: this.state.venues,
                 markers: newArray
@@ -107,7 +114,6 @@ class App extends Component {
         fetchDetails().then(
             (value) =>//TODO: Change venues to value when done
             {
-
                 console.log(Config.debug);
 
                 this.setState({
@@ -219,6 +225,7 @@ class App extends Component {
         let infoWindow = new window.google.maps.InfoWindow({});//Initialize the InfoWindows
         let newArray = [];//holds the new array to be created
         this.state.venues.map((myVenue) => {
+
                 //Gets all venues
                 let contentString = `${myVenue.name}`;//Title on info Windows
                 let marker = new window.google.maps.Marker({//Maps each marker
