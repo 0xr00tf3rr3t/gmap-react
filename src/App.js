@@ -5,6 +5,8 @@ import Map from './Map.js'
 import Menu from './Menu.js'
 import Config from './config.js';
 import escapeRegExp from 'escape-string-regexp'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 //import sortBy from 'sort-by'
 
 // Example : https://api.foursquare.com/v2/venues/4ca7f3bcf47ea143716f7021?client_id=543XCRHEDCJN5YQIZONCQ1NR0O3JWIYCFSWS4EKPPZMRPX3U&client_secret=GUAGXWWAQXHWBJQKLQ3QY5BIWXTF2VWBBHKX10QRLEIOGDBX&v=20180323
@@ -37,6 +39,7 @@ class App extends Component {
             let values = this.state.venues.filter((venue) => {//filters the Query
                 if (match.test(venue.name)) {//If it match returns it
                     console.log('1');
+                    console.log('Venue: ' + venue.name);
                     return venue;
                 }
             });
@@ -44,41 +47,39 @@ class App extends Component {
             this.setState({
                 selectedVenues: values //set values as selectedVenues
             }, () => {
-                console.log(newArray);
-                newArray = this.state.markers.map((marker, index) => {
+                newArray=this.state.markers.map(
+                    (marker)=>{
 
-                    for (let selected of this.state.selectedVenues) {//For all selected venues
-                        if (marker.title === selected.name) {//If marker titles same as selected name
-                            console.log("2");
-                            console.log(marker.title);
-                            console.log(selected);
+                        for(let selected of this.state.selectedVenues )
+                        {
 
+                            if(marker.title===selected.name)
+                            {
+                                marker.setMap(this.state.map);
 
-                        }
-                        else if (index===this.state.selectedVenues.length) {
+                                break;
+                            }
                             marker.setMap(null);
-                            console.log("2else");
-                            console.log(marker.title);
+                        }
+                        if (this.state.selectedVenues.length===0)
+                        {
+                            let toastID=null;
+
+                            if (!toast.isActive(toastID)) {
+                                toastID = toast.info("No Venue Found!",{
+                                    position: toast.POSITION.BOTTOM_RIGHT,
+                                    toastId:"venueToast"});
+                            }
+                            marker.setMap(null);
                         }
 
+                        return marker;
                     }
-                    return marker;
-                });
+                );
+
+
                 console.log("NEW ARRAY AFTER FIRST FOR");
                 console.log(newArray);
-               /* for (let marker of this.state.markers) {
-                    for (let selected of this.state.selectedVenues) {
-                        if (marker.title === selected.name) {
-                            newArray.push(marker);
-                            console.log("second For:");
-                            console.log(marker.title);
-                            break;
-                        }
-                    }
-                }
-                console.log('NewArray');
-                console.log(newArray);*/
-
                 this.setState({
                     markers: newArray
                 })
@@ -101,9 +102,7 @@ class App extends Component {
         }
     };
 
-    clearQuery = () => {
-        this.setState({query: ''})
-    };
+
     /**
      * Get's pictures from
      */
@@ -144,11 +143,22 @@ class App extends Component {
             const promises = oldArray.map(async (item) => {
                 console.log(item);
                 item = item.venue;
-                return await axios.get(/*endPoints + item.id + "?" + new URLSearchParams(parameters)*/"https://api.myjson.com/bins/d0rvq").then((
+                return await axios.get(/*endPoints + item.id + "?" + new URLSearchParams(parameters)*/"https://.myjson.com/bins/d0rvq").then((
                     (item) => {
                         return item.data.response.venue;
                     }
-                ))
+                )).catch(error=>
+                    {
+                        let toastID=null;
+
+                        if (!toast.isActive(toastID)) {
+                            toastID = toast.error("Error Getting Venues! Verify your API KEY\n"+error,{
+                                position: toast.POSITION.BOTTOM_RIGHT,
+                                toastId:"netToast"});
+                        }
+                    }
+
+                )
             });
             return await Promise.all(promises);
 
@@ -178,7 +188,13 @@ class App extends Component {
                 console.log(response)
             }).then(this.getDetailedInfo)
             .catch(error => {
-                    console.log('Error!!' + error);
+                let toastID=null;
+
+                if (!toast.isActive(toastID)) {
+                    toastID = toast.error("Error Communicating with Fourquare!\n"+error,{
+                        position: toast.POSITION.BOTTOM_RIGHT,
+                        toastId:"FourSquareToast"});
+                }
                 }
             )
     };
@@ -196,7 +212,7 @@ class App extends Component {
         if (this.state.selectedMarker !== null && this.state.selectedMarker !== marker) {//If the selectedmarker isnt't
             this.state.selectedMarker.setAnimation(null);         // empty && is  not already selected
         }
-        if (marker.getAnimation() !== null) {//If animation isn't equal to null
+        if (marker.getAnimation() !== null&& this.state.selectedMarker !== marker) {//If animation isn't equal to null
             marker.setAnimation(null); // Set animation to null
         } else {
             marker.setAnimation(window.google.maps.Animation.BOUNCE);//Otherwise make animation bounce
@@ -239,7 +255,6 @@ class App extends Component {
                 marker.addListener('click', () => {
                     this.setInfoWindow(myVenue);
                     this.animationControl(marker);
-
                 });
                 newArray.push(marker);//Push all markers into an Array
                 this.setState({//Set state references
@@ -296,7 +311,6 @@ class App extends Component {
         this.state.infoWindow.open(this.state.map,
             mapMarker[0])
     };
-
     render() {
         return (
             <div className={'Main-Container'}>
@@ -305,6 +319,7 @@ class App extends Component {
                       updateQuery={this.updateQuery} selectedVenues={this.state.selectedVenues}
                 />
                 <Map renderMap={this.renderMap} getVenues={this.getVenues}/>
+                <ToastContainer/>
             </div>
         );
     }
