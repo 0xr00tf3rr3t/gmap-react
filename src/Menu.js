@@ -24,7 +24,7 @@ class Menu extends Component {
                     {this.props.selectedVenues.map((venue,index) => {
 
                             return (
-                                <li className={this.props.hiddenStyle ? "hidden" : ""}tabIndex={2+(index+1)} role={'button'} onKeyDown={
+                                <li className={this.props.hiddenStyle ? "hidden" : ""}tabIndex={3+(index)} role={'button'} onKeyDown={
                                     ()=>{this.props.animationControl(venue, 1);
                                         this.props.setInfoWindow(venue)}
                                 } onClick={() => {

@@ -1,8 +1,8 @@
-#Introduction
+# Introduction
 Welcome to **react-gmap** the last project for de Udacity Front-End Nanodegree.
  The concept behind this project was to build a page that would use the 
  google map API and integrate it with a third party (In this case Foursquare)
- #Before Starting
+ # Before Starting
  There's a few things we should do before actually beginning
  
 * To start off you need to create a config.js inside the src folder using the
@@ -16,9 +16,9 @@ class Config {
     }
     export default Config;
 ```
-* ####npm install: Get's the dependecies
-* ####npm start: To connect into the server
-#Things to consider
+* #### npm install: Get's the dependecies
+* #### npm start: To connect into the server
+# Things to consider
 * For the serviceworker to work please build the app with **npm build**
 * Foursquare free API only give access to 50 premium calls, premium calls 
 are needed to render most of this app so without it most of the things won't work.
