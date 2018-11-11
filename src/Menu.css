@@ -3,16 +3,51 @@
     background-color:#ff6e40;
     height:100vh;
   overflow: scroll;
+  min-width: 127px;
 }
-
+.searchButton{
+    position: fixed;
+    z-index:999;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    background-color:red;
+    width: 50px;
+    height:60px;
+    text-align:center;
+}
+.center{
+    width:100%;
+}
 ul{
   list-style: none;
     padding: 1em;
 
+}
+.hidden{
+    transition: margin-left 0.5s ease;
+    margin-left:-35vh;
 }
 li:hover{
     background-color: #c53d13;
   color: white;
     box-shadow: 5px 0 23px 0  rgba(0,0,0,0.51);
 
+}
+@media only screen and (max-width: 800px){
+
+  .hidden{
+      transition: margin-left 0.5s ease;
+      margin-left:-7.813em;
+
+  }
+
+
+}
+@media only screen and (max-width: 400px)
+{
+    .hidden{
+        transition: margin-left 0.5s ease;
+        margin-left:-5.2em;
+    }
 }

@@ -1,4 +1,18 @@
 .searchBar
 {
-padding-left: 40px;
+padding:1em;
+
+}
+.searchInput{
+    height:2em;
+    width:70%;
+    border:none;
+    padding:5px;
+
+    margin-top:0.4em;
+    margin-left:0.6em;
+    background-color: rgba(255, 240, 254, 0.3);
+}
+input .hidden{
+    visibility: hidden;
 }

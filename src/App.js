@@ -7,7 +7,8 @@ import Config from './config.js';
 import escapeRegExp from 'escape-string-regexp'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-//import sortBy from 'sort-by'
+import ErrorBoundary from './ErrorBoundary.js';
+
 
 // Example : https://api.foursquare.com/v2/venues/4ca7f3bcf47ea143716f7021?client_id=543XCRHEDCJN5YQIZONCQ1NR0O3JWIYCFSWS4EKPPZMRPX3U&client_secret=GUAGXWWAQXHWBJQKLQ3QY5BIWXTF2VWBBHKX10QRLEIOGDBX&v=20180323
 class App extends Component {
@@ -21,27 +22,34 @@ class App extends Component {
         client_secret: Config.client_secret,
         gmapAPI: Config.gmapAPI,
         query: '',
-        selectedVenues: []
+        selectedVenues: [],
+        hiddenStyle:false
     };
-
+    /**
+     * Keeps updating the query on each change
+     * @param query
+     */
     updateQuery = (query) => {
         this.setState({query: query.trim()}, () => {
-            console.log(query);
             this.getQuery();
         })
 
     };
+    /**
+     * Gets the values using the query results
+     */
     getQuery = () => {
         let {query} = this.state;//Local variable for state
         let newArray = [];//Temporary array for new values
         if (this.state.query !== '') {//If query not empty
             const match = new RegExp(escapeRegExp(query), 'i');//Create RegExp with query
             let values = this.state.venues.filter((venue) => {//filters the Query
+                if(venue!==undefined)
+                {
                 if (match.test(venue.name)) {//If it match returns it
-                    console.log('1');
-                    console.log('Venue: ' + venue.name);
                     return venue;
                 }
+                    }
             });
 
             this.setState({
@@ -78,8 +86,7 @@ class App extends Component {
                 );
 
 
-                console.log("NEW ARRAY AFTER FIRST FOR");
-                console.log(newArray);
+
                 this.setState({
                     markers: newArray
                 })
@@ -101,22 +108,19 @@ class App extends Component {
             })
         }
     };
-
-
     /**
      * Get's pictures from
      */
     getDetailedInfo = () => {
-
         let app = this;
 
         fetchDetails().then(
-            (value) =>//TODO: Change venues to value when done
+            (value) =>
             {
-                console.log(Config.debug);
+
 
                 this.setState({
-                        venues: Config.debug,
+                        venues: value,
                     },
                     () => {
                         this.setState({
@@ -141,10 +145,11 @@ class App extends Component {
             };
 
             const promises = oldArray.map(async (item) => {
-                console.log(item);
+
                 item = item.venue;
-                return await axios.get(/*endPoints + item.id + "?" + new URLSearchParams(parameters)*/"https://.myjson.com/bins/d0rvq").then((
+                return await axios.get(endPoints + item.id + "?" + new URLSearchParams(parameters)/*"https://.myjson.com/bins/d0rvq"*/).then((
                     (item) => {
+
                         return item.data.response.venue;
                     }
                 )).catch(error=>
@@ -161,13 +166,22 @@ class App extends Component {
                 )
             });
             return await Promise.all(promises);
-
         }
 
     };
     /**
      *  Gets the info from Foursquare
      * @param query : What's gonna be searched on the server
+     */
+    hiddenToggle=()=>{
+        this.setState({
+            hiddenStyle:!this.state.hiddenStyle
+        })
+
+    };
+    /**
+     * Gets suggested venues from Foursuqre
+     * @param query
      */
     getVenues = (query) => {
         const venueEndPoint = "https://api.foursquare.com/v2/venues/explore?";
@@ -185,7 +199,6 @@ class App extends Component {
                         venues: response.data.response.groups[0].items,
                     }
                 );
-                console.log(response)
             }).then(this.getDetailedInfo)
             .catch(error => {
                 let toastID=null;
@@ -198,6 +211,11 @@ class App extends Component {
                 }
             )
     };
+    /**
+     * Controls the animation for markers
+     * @param marker :Marker to be used
+     * @param li : Little trick to fool the method,helps for internal if.
+     */
     animationControl = (marker, li = null) => {
         if (li !== null) {
             marker = this.state.markers.filter(//Gets all the  marker's name
@@ -241,6 +259,8 @@ class App extends Component {
         let infoWindow = new window.google.maps.InfoWindow({});//Initialize the InfoWindows
         let newArray = [];//holds the new array to be created
         this.state.venues.map((myVenue) => {
+            if(myVenue===undefined)
+            {return ""};
 
                 //Gets all venues
                 let contentString = `${myVenue.name}`;//Title on info Windows
@@ -287,39 +307,44 @@ class App extends Component {
             }
         );
         venueSelected = venueSelected[0];
-        console.log(venueSelected);
 
         let content = `<div class="infoWindow">
 <h1 class="venueName">${venueSelected.name}</h1>`;
         if (venueSelected) {
-            if (venueSelected.bestPhoto.prefix !== undefined && venueSelected.bestPhoto.suffix) {
-                content += `<img src="${venueSelected.bestPhoto.prefix}original${venueSelected.bestPhoto.suffix}" class='iwImage'>`
+            if (venueSelected.bestPhoto.prefix !== undefined && venueSelected.bestPhoto.suffix) {//If there's a photo
+                content += `<img src="${venueSelected.bestPhoto.prefix}original${venueSelected.bestPhoto.suffix}" alt=${venueSelected.name} class='iwImage'>`
             }
-            if (venueSelected.hours !== undefined) {
+            if (venueSelected.hours !== undefined) {//If Hours are avaiable
                 if (venueSelected.hours.timeframes[0].open[0].renderedTime) {
                     content += `<p class="venueTime">${venueSelected.hours.timeframes[0].open[0].renderedTime}</p>`;
                 }
             }
-            if (venueSelected.likes) {
+            if (venueSelected.likes) {//If the place haves likes
                 content += `<p class="venueLikes">${venueSelected.likes.summary}</p>`
             }
-            if (venueSelected.rating) {
+            if (venueSelected.rating) {// if there's any rating
                 content += `<p class="venueRating">Rating: ${venueSelected.rating}`
             }
         }
         this.state.infoWindow.setContent(content);//Set the Content for the infoWindow to be the name of the venue
-        this.state.infoWindow.open(this.state.map,
+        this.state.infoWindow.open(this.state.map,//calls the infoWindows
             mapMarker[0])
     };
     render() {
         return (
             <div className={'Main-Container'}>
+                <ErrorBoundary>
                 <Menu markers={this.state.markers} venues={this.state.venues} infoWindow={this.state.infoWindow}
                       map={this.state.map} setInfoWindow={this.setInfoWindow} animationControl={this.animationControl}
-                      updateQuery={this.updateQuery} selectedVenues={this.state.selectedVenues}
+                      updateQuery={this.updateQuery} selectedVenues={this.state.selectedVenues} hiddenStyle={this.state.hiddenStyle}
+                      hiddenToggle={this.hiddenToggle}
                 />
+                </ErrorBoundary>
+                <ErrorBoundary>
                 <Map renderMap={this.renderMap} getVenues={this.getVenues}/>
+                </ErrorBoundary>
                 <ToastContainer/>
+
             </div>
         );
     }
