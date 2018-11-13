@@ -4,6 +4,7 @@
     height:100vh;
   overflow: scroll;
   min-width: 127px;
+
 }
 .searchButton{
     position: fixed;
@@ -24,24 +25,21 @@ ul{
     padding: 1em;
 
 }
-.hidden{
-    transition: margin-left 0.5s ease;
-    margin-left:-35vh;
-}
+
+
 li:hover{
     background-color: #c53d13;
   color: white;
     box-shadow: 5px 0 23px 0  rgba(0,0,0,0.51);
 
 }
-@media only screen and (max-width: 800px){
+@media only screen and (min-width: 401px) and (max-width: 800px){
 
   .hidden{
       transition: margin-left 0.5s ease;
-      margin-left:-7.813em;
+      margin-left:-1em;
 
   }
-
 
 }
 @media only screen and (max-width: 400px)

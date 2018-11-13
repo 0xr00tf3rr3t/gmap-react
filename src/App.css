@@ -48,20 +48,24 @@ span{
     float:right;
     margin: 0.5em;
 }
-.closeButton{
+/*.closeButton .outside{*/
+    /*position:absolute;*/
+    /*top:16px;*/
+    /*left:25px;*/
+    /*display:none;*/
 
-}
+
+/*}*/
 
 
-@media only screen and (max-width: 800px){
-    .body{
-        font-size:0.5em;
-    }
+@media only screen and(min-width:401px)and  ( max-width: 800px){
+
     .infoWindow{
     }
     img{
         width:20%;
     }
+    
 }
 @media only screen and (max-width: 400px)
 {

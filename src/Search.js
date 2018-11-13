@@ -12,6 +12,7 @@ class Search extends Component{
             <div className={'searchBar'}>
                 <FontAwesomeIcon icon={faSearch} sixe={"fa-lg"}/>
                 <input type="text"
+                       aria-label={'search'}
                        value={this.props.query}
                        onChange={(event) => this.props.updateQuery(event.target.value)
                        }

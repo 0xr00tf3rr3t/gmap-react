@@ -1,0 +1,13 @@
+.hidden{
+    transition: display 0.8s ease;
+    display:none;
+}
+.show{
+    transition: display 0.8s ease;
+    visibility: visible;
+}
+
+.closeButton{
+position:absolute;
+    z-index: 99;
+}

@@ -11,8 +11,8 @@ the configuration:
 class Config {
 
     static client_id="YOUR_API_HERE";
-   static  client_secret = "YOUR_API_HERE"";
-    static gmapAPI="YOUR_API_HERE"";
+   static  client_secret = "YOUR_API_HERE";
+    static gmapAPI="YOUR_API_HERE";
     }
     export default Config;
 ```

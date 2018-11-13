@@ -7,10 +7,18 @@ import Config from './config.js';
 import escapeRegExp from 'escape-string-regexp'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ErrorBoundary from './ErrorBoundary.js';
+import Close from './Close.js'
 
+window.gm_authFailure=()=> {
+let toastID
+    if (!toast.isActive(toastID)) {
+        toastID = toast.error("Error with Google Maps! Check your API", {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            toastId: "gmapToast"
+        });
+    }
 
-// Example : https://api.foursquare.com/v2/venues/4ca7f3bcf47ea143716f7021?client_id=543XCRHEDCJN5YQIZONCQ1NR0O3JWIYCFSWS4EKPPZMRPX3U&client_secret=GUAGXWWAQXHWBJQKLQ3QY5BIWXTF2VWBBHKX10QRLEIOGDBX&v=20180323
+};
 class App extends Component {
     state = {
         venues: [],// Venues to be recieved with API
@@ -25,6 +33,7 @@ class App extends Component {
         selectedVenues: [],
         hiddenStyle:false
     };
+
     /**
      * Keeps updating the query on each change
      * @param query
@@ -128,7 +137,11 @@ class App extends Component {
                         })
                     }
                 );
-                this.renderMap();
+                try{this.renderMap()}
+            catch(error){
+                    console.log("ERROR!");
+
+            };
 
             }
         );
@@ -244,8 +257,9 @@ class App extends Component {
      * Loads the script used to  render the map
      */
     renderMap = () => {
-        loadScript(`https://maps.googleapis.com/maps/api/js?key=${this.state.gmapAPI}&callback=initMap`);
-        window.initMap = this.initMap;
+
+            loadScript(`https://maps.googleapis.com/maps/api/js?key=${this.state.gmapAPI}&callback=initMap`);
+            window.initMap = this.initMap;
     };
     /**
      * Initilize Google Maps elements needed for rendering
@@ -254,7 +268,8 @@ class App extends Component {
         let map = new window.google.maps.Map(document.getElementById('map'), {//Sets the parameters for the map
             center: {lat: 18.465518, lng: -66.116316},
             zoom: 15,
-            clickableIcons: false
+            clickableIcons: false,
+            mapTypeControl:false
         });
         let infoWindow = new window.google.maps.InfoWindow({});//Initialize the InfoWindows
         let newArray = [];//holds the new array to be created
@@ -312,7 +327,7 @@ class App extends Component {
 <h1 class="venueName">${venueSelected.name}</h1>`;
         if (venueSelected) {
             if (venueSelected.bestPhoto.prefix !== undefined && venueSelected.bestPhoto.suffix) {//If there's a photo
-                content += `<img src="${venueSelected.bestPhoto.prefix}original${venueSelected.bestPhoto.suffix}" alt=${venueSelected.name} class='iwImage'>`
+                content += `<img src="${venueSelected.bestPhoto.prefix}original${venueSelected.bestPhoto.suffix}" alt="${venueSelected.name}" class='iwImage'>`
             }
             if (venueSelected.hours !== undefined) {//If Hours are avaiable
                 if (venueSelected.hours.timeframes[0].open[0].renderedTime) {
@@ -333,16 +348,15 @@ class App extends Component {
     render() {
         return (
             <div className={'Main-Container'}>
-                <ErrorBoundary>
+
+
                 <Menu markers={this.state.markers} venues={this.state.venues} infoWindow={this.state.infoWindow}
                       map={this.state.map} setInfoWindow={this.setInfoWindow} animationControl={this.animationControl}
                       updateQuery={this.updateQuery} selectedVenues={this.state.selectedVenues} hiddenStyle={this.state.hiddenStyle}
                       hiddenToggle={this.hiddenToggle}
                 />
-                </ErrorBoundary>
-                <ErrorBoundary>
+                <Close hiddenStyle={this.state.hiddenStyle} hiddenToggle={this.hiddenToggle}/>
                 <Map renderMap={this.renderMap} getVenues={this.getVenues}/>
-                </ErrorBoundary>
                 <ToastContainer/>
 
             </div>
